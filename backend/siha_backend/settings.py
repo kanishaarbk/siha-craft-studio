@@ -16,8 +16,14 @@ sys.path.insert(0, str(BASE_DIR / 'apps'))
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-siha-craft-studio-dev-key')
 
 DEBUG = os.getenv('DJANGO_DEBUG', 'False').lower() in ('true', '1', 't')
-ALLOWED_HOSTS = [host.strip() for host in os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1', 'https://backend-drab-chi-37.vercel.app/').split(',') if host.strip()]
-
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv(
+        'DJANGO_ALLOWED_HOSTS',
+        'localhost,127.0.0.1,backend-drab-chi-37.vercel.app'
+    ).split(',')
+    if host.strip()
+]
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -79,14 +85,13 @@ WSGI_APPLICATION = 'siha_backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME', 'defaultdb'),
-        'USER': os.getenv('DB_USER', 'avnadmin'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
         'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST', 'mysql-b6dffa9-kanishaabaraneetharan-9953.i.aivencloud.com'),
-        'PORT': os.getenv('DB_PORT', '11837'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT', '3306'),
         'OPTIONS': {
             'charset': 'utf8mb4',
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
         },
     }
 }
