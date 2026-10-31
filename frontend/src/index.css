@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: 'Outfit', sans-serif;
+  }
+
+  h1, h2, h3, .font-heading {
+    font-family: 'Playfair Display', serif;
+  }
+
+  .font-script {
+    font-family: 'Cormorant Garamond', serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-full bg-brand-burgundy text-white font-medium shadow-md hover:bg-brand-burgundy-dark transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-brand-burgundy focus:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-full bg-white text-brand-burgundy border border-pastel-pink font-medium shadow-sm hover:bg-pastel-peach/40 hover:border-brand-burgundy/30 transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-brand-burgundy;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center px-5 py-2.5 rounded-full border border-brand-burgundy text-brand-burgundy font-medium hover:bg-brand-burgundy hover:text-white transition-all duration-300;
+  }
+
+  .card-pastel {
+    @apply bg-white/80 backdrop-blur-sm rounded-2xl border border-pastel-pink/60 shadow-card hover:shadow-pastel transition-all duration-300;
+  }
+
+  .input-pastel {
+    @apply w-full px-4 py-3 rounded-xl border border-pastel-pink/80 bg-white/90 text-brand-chocolate placeholder:text-brand-chocolate/40 focus:outline-none focus:ring-2 focus:ring-brand-burgundy focus:border-transparent transition-all;
+  }
+
+  .stitched-border {
+    border: 2px dashed #F8DDE0;
+    border-radius: 1rem;
+  }
+}
+
+/* Reduced Motion Respect */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Custom delicate scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FFF9F3;
+}
+::-webkit-scrollbar-thumb {
+  background: #F8DDE0;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #71313D;
+}
