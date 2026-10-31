@@ -15,8 +15,7 @@ sys.path.insert(0, str(BASE_DIR / 'apps'))
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-siha-craft-studio-dev-key')
 
-DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() in ('true', '1', 't')
-
+DEBUG = os.getenv('DJANGO_DEBUG', 'False').lower() in ('true', '1', 't')
 ALLOWED_HOSTS = [host.strip() for host in os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1', 'https://backend-drab-chi-37.vercel.app/').split(',') if host.strip()]
 
 # Application definition
@@ -80,11 +79,11 @@ WSGI_APPLICATION = 'siha_backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME', 'siha_craft_studio'),
-        'USER': os.getenv('DB_USER', 'siha_app'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'SihaApp@2026!'),
-        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
-        'PORT': os.getenv('DB_PORT', '3306'),
+        'NAME': os.getenv('DB_NAME', 'defaultdb'),
+        'USER': os.getenv('DB_USER', 'avnadmin'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST', 'mysql-b6dffa9-kanishaabaraneetharan-9953.i.aivencloud.com'),
+        'PORT': os.getenv('DB_PORT', '11837'),
         'OPTIONS': {
             'charset': 'utf8mb4',
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
@@ -143,10 +142,25 @@ REST_FRAMEWORK = {
 }
 
 # CORS Configuration
-cors_origins = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173')
-CORS_ALLOWED_ORIGINS = [origin.strip() for origin in cors_origins.split(',') if origin.strip()]
+
+cors_origins = os.getenv(
+    'CORS_ALLOWED_ORIGINS',
+    'http://localhost:5173,http://127.0.0.1:5173,https://frontend-ivory-nu-e987fhvqfo.vercel.app'
+)
+
+CORS_ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in cors_origins.split(',')
+    if origin.strip()
+]
+
 CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in cors_origins.split(',') if origin.strip()]
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in cors_origins.split(',')
+    if origin.strip()
+]
 
 # Razorpay Configuration
 RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', 'rzp_test_TdWtI0lP5xMkO4')
