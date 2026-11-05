@@ -898,6 +898,64 @@ class AdminRunMigrationsView(views.APIView):
                     )
             except Exception:
                 pass
+            # Seed demo order if none exist
+            try:
+                from orders.models import Order, OrderItem, OrderStatusHistory
+                from catalog.models import Product
+                if not Order.objects.exists():
+                    customer_user = User.objects.filter(email='customer@sihacraftstudio.com').first()
+                    first_prod = Product.objects.first()
+                    demo_order = Order.objects.create(
+                        order_number="SIHA-20261105-DEMO1",
+                        customer=customer_user,
+                        guest_email="customer@sihacraftstudio.com",
+                        guest_name="Aaradhya Sharma",
+                        guest_phone="+919876543210",
+                        shipping_name="Aaradhya Sharma",
+                        shipping_phone="+919876543210",
+                        shipping_address_line1="42, Lavender Lane, Koramangala",
+                        shipping_city="Bengaluru",
+                        shipping_state="Karnataka",
+                        shipping_postal_code="560034",
+                        shipping_country="India",
+                        subtotal=Decimal("1299.00"),
+                        shipping_fee=Decimal("0.00"),
+                        discount_amount=Decimal("0.00"),
+                        total_amount=Decimal("1299.00"),
+                        payment_status=Order.PaymentStatus.PAID,
+                        fulfillment_status=Order.FulfillmentStatus.SHIPPED,
+                        courier_name="BlueDart Express",
+                        tracking_number="BLUEDART-IND-8849201",
+                        tracking_url="https://www.bluedart.com/tracking?track=BLUEDART-IND-8849201",
+                        estimated_delivery_date=timezone.now().date() + timezone.timedelta(days=3),
+                        admin_notes="Handcrafted with organic cotton yarn and gift wrapped."
+                    )
+                    if first_prod:
+                        OrderItem.objects.create(
+                            order=demo_order,
+                            product=first_prod,
+                            product_name=first_prod.name,
+                            unit_price=first_prod.effective_price,
+                            quantity=1,
+                            total_price=first_prod.effective_price
+                        )
+                    OrderStatusHistory.objects.create(
+                        order=demo_order,
+                        status=Order.FulfillmentStatus.CONFIRMED,
+                        notes="Order verified and artisan assigned to handcrafting."
+                    )
+                    OrderStatusHistory.objects.create(
+                        order=demo_order,
+                        status=Order.FulfillmentStatus.PROCESSING,
+                        notes="Item hand-crocheted and inspected by master artisan."
+                    )
+                    OrderStatusHistory.objects.create(
+                        order=demo_order,
+                        status=Order.FulfillmentStatus.SHIPPED,
+                        notes="Dispatched via BlueDart Express. AWB: BLUEDART-IND-8849201"
+                    )
+            except Exception:
+                pass
             return Response({'output': out.getvalue(), 'status': 'success'})
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
