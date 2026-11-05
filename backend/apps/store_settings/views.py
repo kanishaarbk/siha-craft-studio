@@ -904,9 +904,10 @@ class AdminRunMigrationsView(views.APIView):
                 from datetime import timedelta
                 from orders.models import Order, OrderItem, OrderStatusHistory
                 from catalog.models import Product
-                if not Order.objects.filter(order_number="SIHA-20261105-DEMO1").exists():
-                    customer_user = User.objects.filter(email='customer@sihacraftstudio.com').first()
-                    first_prod = Product.objects.first()
+                demo_order = Order.objects.filter(order_number="SIHA-20261105-DEMO1").first()
+                customer_user = User.objects.filter(email='customer@sihacraftstudio.com').first()
+                first_prod = Product.objects.first()
+                if not demo_order:
                     demo_order = Order.objects.create(
                         order_number="SIHA-20261105-DEMO1",
                         customer=customer_user,
@@ -932,16 +933,17 @@ class AdminRunMigrationsView(views.APIView):
                         estimated_delivery_date=timezone.now().date() + timedelta(days=3),
                         admin_notes="Handcrafted with organic cotton yarn and gift wrapped."
                     )
-                    if first_prod:
-                        prod_price = first_prod.sale_price if first_prod.sale_price else first_prod.price
-                        OrderItem.objects.create(
-                            order=demo_order,
-                            product=first_prod,
-                            product_name=first_prod.name,
-                            unit_price=prod_price,
-                            quantity=1,
-                            total_price=prod_price
-                        )
+                if demo_order and not demo_order.items.exists() and first_prod:
+                    prod_price = first_prod.sale_price if first_prod.sale_price else first_prod.price
+                    OrderItem.objects.create(
+                        order=demo_order,
+                        product=first_prod,
+                        product_name=first_prod.name,
+                        unit_price=prod_price,
+                        quantity=1,
+                        total_price=prod_price
+                    )
+                if demo_order and not demo_order.status_history.exists():
                     OrderStatusHistory.objects.create(
                         order=demo_order,
                         status=Order.FulfillmentStatus.CONFIRMED,
@@ -957,7 +959,7 @@ class AdminRunMigrationsView(views.APIView):
                         status=Order.FulfillmentStatus.SHIPPED,
                         notes="Dispatched via BlueDart Express. AWB: BLUEDART-IND-8849201"
                     )
-                    order_seed_msg = f"Seeded order {demo_order.order_number}"
+                order_seed_msg = f"Configured order {demo_order.order_number}"
             except Exception as ex:
                 order_seed_msg = f"Order seed failed: {str(ex)}"
             return Response({'output': out.getvalue(), 'order_seed': order_seed_msg, 'status': 'success'})
