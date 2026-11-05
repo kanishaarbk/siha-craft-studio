@@ -933,13 +933,14 @@ class AdminRunMigrationsView(views.APIView):
                         admin_notes="Handcrafted with organic cotton yarn and gift wrapped."
                     )
                     if first_prod:
+                        prod_price = first_prod.sale_price if first_prod.sale_price else first_prod.price
                         OrderItem.objects.create(
                             order=demo_order,
                             product=first_prod,
                             product_name=first_prod.name,
-                            unit_price=first_prod.effective_price,
+                            unit_price=prod_price,
                             quantity=1,
-                            total_price=first_prod.effective_price
+                            total_price=prod_price
                         )
                     OrderStatusHistory.objects.create(
                         order=demo_order,
