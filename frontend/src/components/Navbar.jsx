@@ -25,8 +25,7 @@ export default function Navbar() {
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Shop All', path: '/shop' },
-    { name: 'Categories', path: '/categories' },
-    { name: 'Crochet Classes', path: '/classes' },
+    { name: 'Workshops & Classes', path: '/classes' },
     { name: 'Custom Orders', path: '/custom-orders' },
     { name: 'Track Order', path: '/order-tracking' },
     { name: 'About Us', path: '/about' },

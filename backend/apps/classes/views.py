@@ -4,10 +4,11 @@ from django.utils import timezone
 from rest_framework import views, status, permissions
 from rest_framework.response import Response
 
-from .models import CrochetClass, ClassSession, ClassBooking, ClassResource
+from .models import CrochetClass, ClassSession, ClassBooking, ClassResource, Workshop
 from .serializers import (
     CrochetClassListSerializer, CrochetClassDetailSerializer,
-    ClassBookingSerializer, ClassSessionSerializer, ClassResourceSerializer
+    ClassBookingSerializer, ClassSessionSerializer, ClassResourceSerializer,
+    WorkshopSerializer
 )
 from accounts.permissions import IsStaffOrAdmin
 from notifications.models import Notification
@@ -189,3 +190,72 @@ class AdminClassSessionManageView(views.APIView):
 
         session.save()
         return Response(ClassSessionSerializer(session).data)
+
+
+# WORKSHOPS (GOOGLE MEET) VIEWS
+class WorkshopListView(views.APIView):
+    """
+    Public endpoint: Only show published workshops to website visitors.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        workshops = Workshop.objects.filter(is_published=True).order_by('date', 'time')
+        serializer = WorkshopSerializer(workshops, many=True)
+        return Response(serializer.data)
+
+
+class AdminWorkshopView(views.APIView):
+    """
+    Admin endpoint: Manage all workshops (create, list).
+    """
+    permission_classes = [IsStaffOrAdmin]
+
+    def get(self, request):
+        workshops = Workshop.objects.all().order_by('date', 'time')
+        serializer = WorkshopSerializer(workshops, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = WorkshopSerializer(data=request.data)
+        if serializer.is_valid():
+            workshop = serializer.save()
+            return Response(WorkshopSerializer(workshop).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AdminWorkshopDetailView(views.APIView):
+    """
+    Admin endpoint: Retrieve, update, or delete a workshop.
+    """
+    permission_classes = [IsStaffOrAdmin]
+
+    def get_object(self, pk):
+        try:
+            return Workshop.objects.get(pk=pk)
+        except Workshop.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        workshop = self.get_object(pk)
+        if not workshop:
+            return Response({'error': 'Workshop not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(WorkshopSerializer(workshop).data)
+
+    def put(self, request, pk):
+        workshop = self.get_object(pk)
+        if not workshop:
+            return Response({'error': 'Workshop not found.'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = WorkshopSerializer(workshop, data=request.data, partial=True)
+        if serializer.is_valid():
+            updated = serializer.save()
+            return Response(WorkshopSerializer(updated).data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        workshop = self.get_object(pk)
+        if not workshop:
+            return Response({'error': 'Workshop not found.'}, status=status.HTTP_404_NOT_FOUND)
+        workshop.delete()
+        return Response({'message': 'Workshop deleted successfully.'}, status=status.HTTP_200_OK)
+

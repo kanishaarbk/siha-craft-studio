@@ -1,6 +1,7 @@
 import secrets
 from django.contrib.auth import authenticate
 from django.conf import settings
+from django.db.models import Q
 from rest_framework import status, views, permissions, viewsets
 from rest_framework.response import Response
 from .models import User, AuthToken, Address
@@ -27,21 +28,26 @@ class LoginView(views.APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        email = request.data.get('email', '').strip().lower()
+        identifier = (request.data.get('email') or request.data.get('username') or '').strip()
         password = request.data.get('password', '')
 
-        if not email or not password:
-            return Response({'error': 'Email and password are required.'}, status=status.HTTP_400_BAD_REQUEST)
+        if not identifier or not password:
+            return Response({'error': 'Email/username and password are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        user = authenticate(request, username=email, password=password)
+        # First attempt standard authenticate
+        user = authenticate(request, username=identifier, password=password)
+
         if not user:
-            # Try lookup by email directly in case username differs
-            try:
-                user_obj = User.objects.get(email__iexact=email)
-                if user_obj.check_password(password):
-                    user = user_obj
-            except User.DoesNotExist:
-                user = None
+            # Check by email or username (case-insensitive)
+            user_obj = User.objects.filter(
+                Q(email__iexact=identifier) | Q(username__iexact=identifier)
+            ).first()
+
+            if not user_obj and identifier.lower() == 'admin':
+                user_obj = User.objects.filter(email='admin@sihacraftstudio.com').first()
+
+            if user_obj and user_obj.check_password(password):
+                user = user_obj
 
         if not user:
             return Response({'error': 'Invalid email or password.'}, status=status.HTTP_401_UNAUTHORIZED)

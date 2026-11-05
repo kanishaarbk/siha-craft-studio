@@ -1,5 +1,15 @@
 from rest_framework import serializers
-from .models import CrochetClass, ClassSession, ClassBooking, ClassResource
+from .models import CrochetClass, ClassSession, ClassBooking, ClassResource, Workshop
+
+
+class WorkshopSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Workshop
+        fields = [
+            'id', 'title', 'description', 'google_meet_url',
+            'date', 'time', 'registration_link', 'is_published',
+            'created_at', 'updated_at'
+        ]
 
 
 class ClassResourceSerializer(serializers.ModelSerializer):

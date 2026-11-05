@@ -119,3 +119,22 @@ class ClassResource(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.crochet_class.title})"
+
+
+class Workshop(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    google_meet_url = models.URLField(max_length=500, help_text='Google Meet link for attending the workshop')
+    date = models.DateField(help_text='Workshop date')
+    time = models.TimeField(help_text='Workshop time')
+    registration_link = models.URLField(max_length=500, blank=True, null=True, help_text='Optional registration link')
+    is_published = models.BooleanField(default=True, help_text='Only published workshops are visible to visitors')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['date', 'time']
+
+    def __str__(self):
+        return f"{self.title} on {self.date} at {self.time}"
+

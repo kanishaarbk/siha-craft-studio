@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { Video, Calendar, Clock, Award, ArrowRight, CheckCircle2, Scissors, Sparkles } from 'lucide-react';
+import { Video, Calendar, Clock, Award, ArrowRight, CheckCircle2, Scissors, Sparkles, ExternalLink } from 'lucide-react';
 import api from '../services/api';
 
 export default function ClassesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [classes, setClasses] = useState([]);
+  const [workshops, setWorkshops] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const selectedLevel = searchParams.get('skill_level') || '';
@@ -13,8 +14,14 @@ export default function ClassesPage() {
   useEffect(() => {
     setLoading(true);
     const query = selectedLevel ? `?skill_level=${selectedLevel}` : '';
-    api.get(`/classes/${query}`)
-      .then((res) => setClasses(res.data))
+    Promise.all([
+      api.get(`/classes/${query}`),
+      api.get('/workshops/'),
+    ])
+      .then(([clsRes, wsRes]) => {
+        setClasses(clsRes.data || []);
+        setWorkshops(wsRes.data || []);
+      })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, [selectedLevel]);
@@ -61,6 +68,93 @@ export default function ClassesPage() {
           ))}
         </div>
       </div>
+
+      {/* Live Google Meet Workshops Published by Atelier */}
+      {workshops.length > 0 && (
+        <section className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-pastel-pink/70 pb-3">
+            <div>
+              <span className="text-xs font-semibold uppercase tracking-wider text-brand-burgundy flex items-center gap-1.5">
+                <Video className="w-3.5 h-3.5" /> Direct Access Sessions
+              </span>
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-brand-burgundy mt-1">
+                Live Google Meet Workshops
+              </h2>
+            </div>
+            <span className="text-xs text-brand-chocolate/70">
+              Join live from anywhere • Click link to join room
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {workshops.map((ws) => (
+              <div
+                key={ws.id}
+                className="card-pastel p-6 sm:p-7 bg-white/95 rounded-3xl border border-pastel-pink shadow-pastel hover:shadow-pastel-lg transition-all duration-300 flex flex-col justify-between gap-5 group"
+              >
+                <div className="space-y-3.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-pastel-pink/80 text-brand-burgundy text-[11px] font-bold">
+                      <Video className="w-3 h-3" /> Google Meet Live
+                    </span>
+                    <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-3 py-0.5 rounded-full">
+                      Open to Join
+                    </span>
+                  </div>
+
+                  <h3 className="font-heading text-xl font-bold text-brand-burgundy leading-snug group-hover:text-brand-burgundy-dark transition-colors">
+                    {ws.title}
+                  </h3>
+
+                  <p className="text-xs text-brand-chocolate/80 leading-relaxed">
+                    {ws.description}
+                  </p>
+
+                  <div className="flex flex-wrap items-center gap-4 text-xs text-brand-chocolate/80 pt-2 border-t border-pastel-pink/40">
+                    <span className="flex items-center gap-1.5 font-medium">
+                      <Calendar className="w-3.5 h-3.5 text-brand-burgundy" />
+                      {new Date(ws.date).toLocaleDateString('en-IN', {
+                        weekday: 'short',
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                      })}
+                    </span>
+                    <span className="flex items-center gap-1.5 font-medium">
+                      <Clock className="w-3.5 h-3.5 text-brand-burgundy" />
+                      {ws.time?.slice(0, 5)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+                  <a
+                    href={ws.google_meet_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-primary w-full sm:w-auto text-xs py-2.5 px-5 gap-2 justify-center shadow-pastel"
+                  >
+                    <Video className="w-4 h-4" />
+                    <span>Join Google Meet Session</span>
+                    <ExternalLink className="w-3.5 h-3.5 ml-0.5" />
+                  </a>
+
+                  {ws.registration_link && (
+                    <a
+                      href={ws.registration_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-secondary w-full sm:w-auto text-xs py-2.5 px-4 justify-center"
+                    >
+                      <span>Register Online</span>
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Classes Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

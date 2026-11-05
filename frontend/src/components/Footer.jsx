@@ -77,9 +77,9 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2 text-sm text-brand-chocolate/80">
               <li><Link to="/shop" className="hover:text-brand-burgundy transition-colors">Shop All Handmade</Link></li>
-              <li><Link to="/categories" className="hover:text-brand-burgundy transition-colors">Product Categories</Link></li>
               <li><Link to="/custom-orders" className="hover:text-brand-burgundy transition-colors">Custom Orders</Link></li>
-              <li><Link to="/classes" className="hover:text-brand-burgundy transition-colors">Online Crochet Classes</Link></li>
+              <li><Link to="/classes" className="hover:text-brand-burgundy transition-colors">Workshops & Classes</Link></li>
+              <li><Link to="/order-tracking" className="hover:text-brand-burgundy transition-colors">Track Order</Link></li>
               <li><Link to="/about" className="hover:text-brand-burgundy transition-colors">Our Artisan Story</Link></li>
             </ul>
           </div>

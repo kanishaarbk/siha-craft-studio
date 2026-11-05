@@ -3,10 +3,13 @@ from .models import User, Address
 
 
 class UserSerializer(serializers.ModelSerializer):
+    is_admin = serializers.BooleanField(read_only=True)
+
     class Meta:
         model = User
-        fields = ['id', 'email', 'username', 'first_name', 'last_name', 'phone_number', 'role', 'avatar', 'is_staff', 'created_at']
-        read_only_fields = ['id', 'role', 'is_staff', 'created_at']
+        fields = ['id', 'email', 'username', 'first_name', 'last_name', 'phone_number', 'role', 'is_admin', 'avatar', 'is_staff', 'created_at']
+        read_only_fields = ['id', 'role', 'is_admin', 'is_staff', 'created_at']
+
 
 
 class RegisterSerializer(serializers.ModelSerializer):

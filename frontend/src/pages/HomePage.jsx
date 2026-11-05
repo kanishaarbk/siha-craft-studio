@@ -6,7 +6,6 @@ import ProductCard from '../components/ProductCard';
 import api from '../services/api';
 
 export default function HomePage() {
-  const [categories, setCategories] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [plushieProducts, setPlushieProducts] = useState([]);
   const [bagProducts, setBagProducts] = useState([]);
@@ -17,13 +16,11 @@ export default function HomePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [catsRes, prodsRes, classesRes] = await Promise.all([
-          api.get('/categories/'),
+        const [prodsRes, classesRes] = await Promise.all([
           api.get('/products/?page_size=12'),
           api.get('/classes/'),
         ]);
 
-        setCategories(catsRes.data);
         const allProds = prodsRes.data.results || [];
         setFeaturedProducts(allProds.filter((p) => p.is_featured).slice(0, 4));
         setPlushieProducts(allProds.filter((p) => p.category_slug === 'crochet-toys-plushies').slice(0, 4));
@@ -90,53 +87,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3. Shop by Category */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-brand-burgundy">Curated Categories</span>
-            <h2 className="font-heading text-3xl sm:text-4xl font-bold text-brand-burgundy mt-1">Shop by Handmade Craft</h2>
-          </div>
-          <Link to="/categories" className="btn-outline text-xs gap-1.5 self-start sm:self-auto">
-            <span>View All Categories</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
-          {categories.map((cat, idx) => {
-            const bgGradients = [
-              'bg-pastel-pink/40 hover:bg-pastel-pink/70',
-              'bg-pastel-peach/40 hover:bg-pastel-peach/70',
-              'bg-pastel-lavender/40 hover:bg-pastel-lavender/70',
-              'bg-pastel-sage/40 hover:bg-pastel-sage/70',
-              'bg-pastel-sand/60 hover:bg-pastel-sand',
-              'bg-pastel-cream hover:bg-pastel-pink/30',
-            ];
-            const bgClass = bgGradients[idx % bgGradients.length];
-
-            return (
-              <Link
-                key={cat.id}
-                to={`/shop?category=${cat.slug}`}
-                className={`group p-5 rounded-3xl border border-pastel-pink/60 transition-all duration-300 transform hover:-translate-y-1.5 shadow-sm hover:shadow-pastel flex flex-col items-center text-center ${bgClass}`}
-              >
-                <div className="w-16 h-16 rounded-full bg-white shadow-sm flex items-center justify-center text-brand-burgundy group-hover:scale-110 transition-transform mb-3 border border-pastel-pink">
-                  <Scissors className="w-7 h-7" />
-                </div>
-                <h3 className="font-heading text-sm font-bold text-brand-burgundy leading-snug line-clamp-2">
-                  {cat.name}
-                </h3>
-                <span className="text-[11px] text-brand-chocolate/70 mt-1">
-                  {cat.product_count || 'Boutique'} items
-                </span>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* 4. Best Sellers / Featured Products */}
+      {/* Best Sellers / Featured Products */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
           <div>
@@ -316,31 +267,28 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 10. Community & Instagram Highlights */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
-        <div>
+      {/* Community & Instagram */}
+      <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-6">
+        <div className="p-8 sm:p-10 rounded-3xl bg-white/90 border border-pastel-pink shadow-pastel space-y-4">
           <span className="text-xs font-semibold uppercase tracking-wider text-brand-burgundy">Follow Along</span>
-          <h2 className="font-heading text-3xl font-bold text-brand-burgundy mt-1">@sihacraftstudio on Instagram</h2>
-          <p className="text-sm text-brand-chocolate/75 max-w-md mx-auto mt-1">
-            Behind the scenes in our Bengaluru atelier, work-in-progress amigurumi stitches, and student showcases.
+          <h2 className="font-heading text-3xl font-bold text-brand-burgundy">@sihacraftstudio on Instagram</h2>
+          <p className="text-sm text-brand-chocolate/75 max-w-md mx-auto">
+            Behind the scenes in our Bengaluru atelier, work-in-progress amigurumi stitches, and artisan showcases.
           </p>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="aspect-square rounded-2xl overflow-hidden shadow-sm group relative">
-            <img src="https://images.unsplash.com/photo-1558679908-541bcf1249ff?auto=format&fit=crop&w=500&q=80" alt="Crochet Bunny" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-          </div>
-          <div className="aspect-square rounded-2xl overflow-hidden shadow-sm group relative">
-            <img src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=500&q=80" alt="Granny Square Tote" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-          </div>
-          <div className="aspect-square rounded-2xl overflow-hidden shadow-sm group relative">
-            <img src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=500&q=80" alt="Crochet Flowers" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-          </div>
-          <div className="aspect-square rounded-2xl overflow-hidden shadow-sm group relative">
-            <img src="https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=500&q=80" alt="Yarn Skeins" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <div className="pt-2">
+            <a
+              href="https://instagram.com/sihacraftstudio"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary inline-flex items-center gap-2 text-xs px-6 py-2.5"
+            >
+              <span>Follow @sihacraftstudio on Instagram</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </a>
           </div>
         </div>
       </section>
+
 
     </div>
   );

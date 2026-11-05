@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const res = await api.post('/auth/login/', { email, password });
+      const res = await api.post('/auth/login/', { email: email?.trim(), username: email?.trim(), password });
       const { token: authToken, user: userData } = res.data;
       setToken(authToken);
       setUser(userData);

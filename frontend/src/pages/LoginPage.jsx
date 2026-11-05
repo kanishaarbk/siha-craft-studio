@@ -149,11 +149,17 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        {/* Quick Demo Credentials for Evaluation */}
-        <div className="p-3 rounded-xl bg-pastel-cream text-[11px] text-brand-chocolate/80 space-y-1 border border-pastel-pink/60">
-          <p className="font-bold text-brand-burgundy">Preconfigured Accounts:</p>
-          <p>Admin: <code className="bg-white px-1 py-0.5 rounded">admin@sihacraftstudio.com</code> | <code className="bg-white px-1 py-0.5 rounded">Admin@Siha2026!</code></p>
-          <p>Customer: <code className="bg-white px-1 py-0.5 rounded">customer@sihacraftstudio.com</code> | <code className="bg-white px-1 py-0.5 rounded">Customer@Siha2026!</code></p>
+        {/* Quick Demo Credentials & Admin Link */}
+        <div className="p-3.5 rounded-xl bg-pastel-cream text-[11px] text-brand-chocolate/80 space-y-2 border border-pastel-pink/60">
+          <div className="flex items-center justify-between">
+            <span className="font-bold text-brand-burgundy">Artisan Staff Access:</span>
+            <Link to="/admin/login" className="text-brand-burgundy font-semibold hover:underline">
+              Admin Portal →
+            </Link>
+          </div>
+          <p className="text-[10px] text-brand-chocolate/70">
+            Admin: <code className="bg-white px-1 py-0.5 rounded">admin@sihacraftstudio.com</code> (or <code className="bg-white px-1 py-0.5 rounded">admin</code>) | <code className="bg-white px-1 py-0.5 rounded">Admin@Siha2026!</code>
+          </p>
         </div>
 
       </div>

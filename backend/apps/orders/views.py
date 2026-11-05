@@ -204,15 +204,45 @@ class OrderDetailView(views.APIView):
 
 class OrderTrackingView(views.APIView):
     """
-    Publicly or authenticatedly track order shipping status and courier details.
+    Securely track order shipping status and courier details.
+    Requires Order ID and registered email verification or authorized customer/admin authentication.
     """
     permission_classes = [permissions.AllowAny]
 
-    def get(self, request, order_number):
+    def _verify_and_respond(self, request, order_number, email=None):
+        order_number = (order_number or '').strip()
+        if not order_number:
+            return Response({'error': 'Order ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
-            order = Order.objects.get(order_number=order_number)
+            order = Order.objects.prefetch_related('items', 'status_history').get(order_number__iexact=order_number)
         except Order.DoesNotExist:
-            return Response({'error': 'Order not found with provided tracking reference.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Order not found with provided tracking reference. Please double check the ID.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Verification check
+        is_authorized = False
+        user = request.user if request.user and request.user.is_authenticated else None
+
+        if user and (user.is_staff or getattr(user, 'role', '') in ('ADMIN', 'STAFF')):
+            is_authorized = True
+        elif user and order.customer_id and order.customer_id == user.id:
+            is_authorized = True
+        else:
+            provided_email = (email or request.query_params.get('email') or request.data.get('email', '')).strip().lower()
+            if not provided_email:
+                return Response({
+                    'error': 'Please provide the registered email address associated with this order to securely verify your identity.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            customer_email = (order.customer.email.lower() if order.customer else '')
+            guest_email = (order.guest_email.lower() if order.guest_email else '')
+            if provided_email in (customer_email, guest_email):
+                is_authorized = True
+
+        if not is_authorized:
+            return Response({
+                'error': 'Security verification failed: The email address provided does not match the order records.'
+            }, status=status.HTTP_403_FORBIDDEN)
 
         history = [
             {
@@ -223,19 +253,43 @@ class OrderTrackingView(views.APIView):
             for h in order.status_history.all()
         ]
 
+        items = [
+            {
+                'product_name': it.product_name,
+                'variant_name': it.variant_name,
+                'quantity': it.quantity,
+                'unit_price': float(it.unit_price),
+                'total_price': float(it.total_price),
+            }
+            for it in order.items.all()
+        ]
+
         return Response({
             'order_number': order.order_number,
             'fulfillment_status': order.fulfillment_status,
             'payment_status': order.payment_status,
-            'courier_name': order.courier_name or 'Pending Dispatch',
+            'courier_name': order.courier_name or 'Pending Courier Assignment',
             'tracking_number': order.tracking_number,
             'tracking_url': order.tracking_url,
             'estimated_delivery_date': order.estimated_delivery_date,
             'items_count': order.items.count(),
             'destination_city': order.shipping_city,
+            'destination_state': order.shipping_state,
+            'shipping_name': order.shipping_name,
+            'total_amount': float(order.total_amount),
             'order_date': order.created_at,
+            'items': items,
             'status_history': history,
         })
+
+    def get(self, request, order_number):
+        return self._verify_and_respond(request, order_number)
+
+    def post(self, request, order_number=None):
+        ord_num = order_number or request.data.get('order_number')
+        email = request.data.get('email')
+        return self._verify_and_respond(request, ord_num, email=email)
+
 
 
 # STAFF / ADMIN VIEWS
