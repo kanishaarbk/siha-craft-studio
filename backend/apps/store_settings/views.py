@@ -899,10 +899,12 @@ class AdminRunMigrationsView(views.APIView):
             except Exception:
                 pass
             # Seed demo order if none exist
+            order_seed_msg = "No order seeded"
             try:
+                from datetime import timedelta
                 from orders.models import Order, OrderItem, OrderStatusHistory
                 from catalog.models import Product
-                if not Order.objects.exists():
+                if not Order.objects.filter(order_number="SIHA-20261105-DEMO1").exists():
                     customer_user = User.objects.filter(email='customer@sihacraftstudio.com').first()
                     first_prod = Product.objects.first()
                     demo_order = Order.objects.create(
@@ -927,7 +929,7 @@ class AdminRunMigrationsView(views.APIView):
                         courier_name="BlueDart Express",
                         tracking_number="BLUEDART-IND-8849201",
                         tracking_url="https://www.bluedart.com/tracking?track=BLUEDART-IND-8849201",
-                        estimated_delivery_date=timezone.now().date() + timezone.timedelta(days=3),
+                        estimated_delivery_date=timezone.now().date() + timedelta(days=3),
                         admin_notes="Handcrafted with organic cotton yarn and gift wrapped."
                     )
                     if first_prod:
@@ -954,9 +956,10 @@ class AdminRunMigrationsView(views.APIView):
                         status=Order.FulfillmentStatus.SHIPPED,
                         notes="Dispatched via BlueDart Express. AWB: BLUEDART-IND-8849201"
                     )
-            except Exception:
-                pass
-            return Response({'output': out.getvalue(), 'status': 'success'})
+                    order_seed_msg = f"Seeded order {demo_order.order_number}"
+            except Exception as ex:
+                order_seed_msg = f"Order seed failed: {str(ex)}"
+            return Response({'output': out.getvalue(), 'order_seed': order_seed_msg, 'status': 'success'})
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
