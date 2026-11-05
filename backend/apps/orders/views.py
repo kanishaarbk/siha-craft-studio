@@ -286,7 +286,7 @@ class OrderTrackingView(views.APIView):
         return self._verify_and_respond(request, order_number)
 
     def post(self, request, order_number=None):
-        ord_num = order_number or request.data.get('order_number')
+        ord_num = order_number or request.data.get('order_number') or request.data.get('order_id')
         email = request.data.get('email')
         return self._verify_and_respond(request, ord_num, email=email)
 
