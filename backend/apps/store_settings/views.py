@@ -863,3 +863,42 @@ class AdminCouponManageView(views.APIView):
         )
 
         return Response({'message': f'Coupon {coupon.code} created.'}, status=status.HTTP_201_CREATED)
+
+
+class AdminRunMigrationsView(views.APIView):
+    permission_classes = [IsStaffOrAdmin]
+
+    def post(self, request):
+        import io
+        from django.core.management import call_command
+        out = io.StringIO()
+        try:
+            call_command('migrate', interactive=False, stdout=out)
+            # Seed workshops if none exist
+            try:
+                from classes.models import Workshop
+                if not Workshop.objects.exists():
+                    Workshop.objects.create(
+                        title="Beginner Crochet: Sunflower Coasters",
+                        description="Learn basic crochet stitches, magic ring technique, and petal shaping in this cozy 90-minute live workshop with SiHA artisans.",
+                        meet_url="https://meet.google.com/abc-defg-hij",
+                        date="2026-11-20",
+                        time="16:00:00",
+                        registration_url="https://meet.google.com/abc-defg-hij",
+                        is_published=True
+                    )
+                    Workshop.objects.create(
+                        title="Amigurumi Plushie Masterclass",
+                        description="Step-by-step guidance on creating adorable crochet mini plushies, stuffing, embroidery detailing, and joining limbs.",
+                        meet_url="https://meet.google.com/xyz-uvwx-rst",
+                        date="2026-11-28",
+                        time="17:30:00",
+                        registration_url="https://meet.google.com/xyz-uvwx-rst",
+                        is_published=True
+                    )
+            except Exception:
+                pass
+            return Response({'output': out.getvalue(), 'status': 'success'})
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+

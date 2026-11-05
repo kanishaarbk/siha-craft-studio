@@ -2,7 +2,8 @@ from django.urls import path
 from .views import (
     PublicStoreSettingsView, NewsletterSubscribeView, ContactMessageView,
     AdminDashboardStatsView, AdminInventoryListView, AdminInventoryAdjustView,
-    AdminInventoryHistoryView, AdminProductManageView, AdminCouponManageView
+    AdminInventoryHistoryView, AdminProductManageView, AdminCouponManageView,
+    AdminRunMigrationsView
 )
 
 urlpatterns = [
@@ -16,4 +17,5 @@ urlpatterns = [
     path('admin/products/', AdminProductManageView.as_view(), name='admin-products-create'),
     path('admin/products/<int:product_id>/', AdminProductManageView.as_view(), name='admin-products-detail'),
     path('admin/coupons/', AdminCouponManageView.as_view(), name='admin-coupons'),
+    path('admin/run-migrations/', AdminRunMigrationsView.as_view(), name='admin-run-migrations'),
 ]
