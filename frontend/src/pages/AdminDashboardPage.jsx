@@ -11,7 +11,7 @@ import { useToast } from '../context/ToastContext';
 import api from '../services/api';
 
 export default function AdminDashboardPage() {
-  const { user, isAdmin, logout } = useAuth();
+  const { user, isAdmin, loading: authLoading, logout } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -171,13 +171,14 @@ export default function AdminDashboardPage() {
   };
 
   useEffect(() => {
+    if (authLoading) return;
     if (!isAdmin) {
       toast.error('Staff or Administrator access required.');
-      navigate('/admin/login');
+      navigate('/admin/login', { replace: true, state: { from: { pathname: '/admin/dashboard' } } });
       return;
     }
     loadAdminData();
-  }, [isAdmin, navigate]);
+  }, [isAdmin, authLoading, navigate]);
 
   const handleAdminLogout = () => {
     logout();
@@ -533,7 +534,7 @@ export default function AdminDashboardPage() {
     return matchSearch && matchStatus;
   });
 
-  if (loading && !stats) {
+  if (authLoading || (loading && !stats)) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-3">
         <RefreshCw className="w-8 h-8 text-brand-burgundy animate-spin" />
