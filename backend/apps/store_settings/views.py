@@ -874,6 +874,71 @@ class AdminRunMigrationsView(views.APIView):
         out = io.StringIO()
         try:
             call_command('migrate', interactive=False, stdout=out)
+
+            # Ensure cart and wishlist tables exist in production
+            cart_table_msg = "Cart tables verified"
+            try:
+                from django.db import connection
+                with connection.cursor() as cursor:
+                    cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS `cart_cart` (
+                      `id` bigint NOT NULL AUTO_INCREMENT,
+                      `session_key` varchar(64) DEFAULT NULL,
+                      `created_at` datetime(6) NOT NULL,
+                      `updated_at` datetime(6) NOT NULL,
+                      `user_id` bigint DEFAULT NULL,
+                      PRIMARY KEY (`id`),
+                      KEY `cart_cart_user_id_fk` (`user_id`),
+                      KEY `cart_cart_session_key_idx` (`session_key`),
+                      CONSTRAINT `cart_cart_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `accounts_user` (`id`) ON DELETE CASCADE
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+                    """)
+                    cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS `cart_cartitem` (
+                      `id` bigint NOT NULL AUTO_INCREMENT,
+                      `quantity` int unsigned NOT NULL,
+                      `created_at` datetime(6) NOT NULL,
+                      `updated_at` datetime(6) NOT NULL,
+                      `cart_id` bigint NOT NULL,
+                      `product_id` bigint NOT NULL,
+                      `variant_id` bigint DEFAULT NULL,
+                      PRIMARY KEY (`id`),
+                      UNIQUE KEY `cart_cartitem_cart_product_variant_uniq` (`cart_id`,`product_id`,`variant_id`),
+                      KEY `cart_cartitem_product_id_fk` (`product_id`),
+                      KEY `cart_cartitem_variant_id_fk` (`variant_id`),
+                      CONSTRAINT `cart_cartitem_cart_id_fk` FOREIGN KEY (`cart_id`) REFERENCES `cart_cart` (`id`) ON DELETE CASCADE,
+                      CONSTRAINT `cart_cartitem_product_id_fk` FOREIGN KEY (`product_id`) REFERENCES `catalog_product` (`id`) ON DELETE CASCADE,
+                      CONSTRAINT `cart_cartitem_variant_id_fk` FOREIGN KEY (`variant_id`) REFERENCES `catalog_productvariant` (`id`) ON DELETE SET NULL,
+                      CONSTRAINT `cart_cartitem_chk_1` CHECK ((`quantity` >= 0))
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+                    """)
+                    cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS `cart_wishlist` (
+                      `id` bigint NOT NULL AUTO_INCREMENT,
+                      `created_at` datetime(6) NOT NULL,
+                      `user_id` bigint NOT NULL,
+                      PRIMARY KEY (`id`),
+                      UNIQUE KEY `user_id` (`user_id`),
+                      CONSTRAINT `cart_wishlist_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `accounts_user` (`id`) ON DELETE CASCADE
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+                    """)
+                    cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS `cart_wishlistitem` (
+                      `id` bigint NOT NULL AUTO_INCREMENT,
+                      `added_at` datetime(6) NOT NULL,
+                      `product_id` bigint NOT NULL,
+                      `wishlist_id` bigint NOT NULL,
+                      PRIMARY KEY (`id`),
+                      UNIQUE KEY `cart_wishlistitem_wishlist_product_uniq` (`wishlist_id`,`product_id`),
+                      KEY `cart_wishlistitem_product_id_fk` (`product_id`),
+                      CONSTRAINT `cart_wishlistitem_product_id_fk` FOREIGN KEY (`product_id`) REFERENCES `catalog_product` (`id`) ON DELETE CASCADE,
+                      CONSTRAINT `cart_wishlistitem_wishlist_id_fk` FOREIGN KEY (`wishlist_id`) REFERENCES `cart_wishlist` (`id`) ON DELETE CASCADE
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+                    """)
+                cart_table_msg = "Cart tables created/verified successfully"
+            except Exception as e_tbl:
+                cart_table_msg = f"Cart table error: {str(e_tbl)}"
+
             # Seed workshops if none exist
             try:
                 from classes.models import Workshop
@@ -986,6 +1051,7 @@ class AdminRunMigrationsView(views.APIView):
             return Response({
                 'output': out.getvalue(),
                 'order_seed': order_seed_msg,
+                'cart_table_msg': cart_table_msg,
                 'cart_diagnostic': cart_diagnostic,
                 'status': 'success'
             })
