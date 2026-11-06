@@ -108,7 +108,7 @@ export default function AdminLoginPage() {
                 type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@sihacraftstudio.com or admin"
+                placeholder="Enter email or username"
                 className="input-pastel text-xs pl-10 py-3 font-medium"
                 required
                 autoComplete="username"
@@ -149,19 +149,6 @@ export default function AdminLoginPage() {
             )}
           </button>
         </form>
-
-        {/* Verified Admin Credentials Helper */}
-        <div className="p-3 rounded-2xl bg-pastel-cream/70 border border-pastel-pink text-[11px] text-brand-chocolate/85 space-y-1">
-          <p className="font-semibold text-brand-burgundy flex items-center gap-1.5">
-            <Shield className="w-3.5 h-3.5 text-brand-burgundy" /> Verified Admin Account
-          </p>
-          <p>
-            Username: <code className="bg-white px-1.5 py-0.5 rounded border border-pastel-pink/60 text-brand-burgundy font-mono text-[10px]">admin</code> or <code className="bg-white px-1.5 py-0.5 rounded border border-pastel-pink/60 text-brand-burgundy font-mono text-[10px]">admin@sihacraftstudio.com</code>
-          </p>
-          <p>
-            Password: <code className="bg-white px-1.5 py-0.5 rounded border border-pastel-pink/60 text-brand-burgundy font-mono text-[10px]">Admin@Siha2026!</code>
-          </p>
-        </div>
 
         {/* Footer Links */}
         <div className="pt-4 border-t border-pastel-pink/60 flex items-center justify-between text-xs text-brand-chocolate/70">

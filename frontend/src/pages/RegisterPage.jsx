@@ -80,8 +80,10 @@ export default function RegisterPage() {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
+              placeholder="name@example.com"
               className="input-pastel text-xs"
               required
+              autoComplete="email"
             />
           </div>
 
@@ -94,6 +96,7 @@ export default function RegisterPage() {
               onChange={handleInputChange}
               placeholder="+91 98765 43210"
               className="input-pastel text-xs"
+              autoComplete="tel"
             />
           </div>
 
@@ -104,9 +107,11 @@ export default function RegisterPage() {
               name="password"
               value={formData.password}
               onChange={handleInputChange}
+              placeholder="••••••••••••"
               className="input-pastel text-xs"
               required
               minLength={6}
+              autoComplete="new-password"
             />
           </div>
 
