@@ -105,13 +105,10 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        {/* Footer Navigation without credentials */}
-        <div className="pt-3 border-t border-pastel-pink/50 flex items-center justify-between text-xs text-brand-chocolate/70">
+        {/* Return to Boutique */}
+        <div className="pt-3 border-t border-pastel-pink/50 text-center text-xs text-brand-chocolate/70">
           <Link to="/" className="hover:text-brand-burgundy transition-colors">
             ← Return to Boutique
-          </Link>
-          <Link to="/admin/login" className="text-brand-burgundy font-medium hover:underline">
-            Staff Portal →
           </Link>
         </div>
 

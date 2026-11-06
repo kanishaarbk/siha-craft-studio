@@ -962,7 +962,33 @@ class AdminRunMigrationsView(views.APIView):
                 order_seed_msg = f"Configured order {demo_order.order_number}"
             except Exception as ex:
                 order_seed_msg = f"Order seed failed: {str(ex)}"
-            return Response({'output': out.getvalue(), 'order_seed': order_seed_msg, 'status': 'success'})
+
+            # Run test on cart in production
+            cart_diagnostic = {}
+            try:
+                from cart.models import Cart, CartItem
+                from rest_framework.test import APIRequestFactory
+                from cart.views import CartDetailView, CartAddItemView
+                factory = APIRequestFactory()
+                req_get = factory.get('/api/cart/?session_key=guest_frxd8cfqmnmvwehjrk')
+                res_get = CartDetailView.as_view()(req_get)
+                cart_diagnostic['get_status'] = res_get.status_code
+
+                req_add = factory.post('/api/cart/add/', {'product_id': 1, 'quantity': 1, 'session_key': 'guest_frxd8cfqmnmvwehjrk'}, format='json')
+                res_add = CartAddItemView.as_view()(req_add)
+                cart_diagnostic['add_status'] = res_add.status_code
+                cart_diagnostic['add_data'] = res_add.data
+            except Exception as c_err:
+                import traceback
+                cart_diagnostic['cart_error'] = str(c_err)
+                cart_diagnostic['cart_traceback'] = traceback.format_exc()
+
+            return Response({
+                'output': out.getvalue(),
+                'order_seed': order_seed_msg,
+                'cart_diagnostic': cart_diagnostic,
+                'status': 'success'
+            })
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
