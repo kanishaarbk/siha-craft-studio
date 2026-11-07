@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { Search, Package, Truck, CheckCircle2, Clock, ExternalLink, AlertCircle, ArrowRight, ShieldCheck, Mail, MapPin, Calendar } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
+import { getWhatsAppUrl, WHATSAPP_DISPLAY } from '../config/whatsapp';
 
 const trackingSteps = [
   { key: 'PLACED', label: 'Order Placed', desc: 'Order received in atelier' },
@@ -367,7 +368,14 @@ export default function OrderTrackingPage() {
         <div className="flex items-center justify-center gap-4 font-semibold text-brand-burgundy">
           <Link to="/contact" className="hover:underline">Contact Atelier Support</Link>
           <span>•</span>
-          <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" className="hover:underline">WhatsApp Concierge</a>
+          <a
+            href={getWhatsAppUrl(`Hello SiHA Craft Studio! I need assistance tracking my parcel${orderData ? ` (Order #${orderData.order_number})` : ''}.`)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline text-emerald-700 font-semibold"
+          >
+            WhatsApp Concierge ({WHATSAPP_DISPLAY})
+          </a>
         </div>
       </div>
 

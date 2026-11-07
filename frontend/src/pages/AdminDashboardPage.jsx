@@ -10,6 +10,16 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import api from '../services/api';
 
+
+// Safely normalize Django REST Framework list responses
+const getArray = (response) => {
+  const data = response?.data ?? response;
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.results)) return data.results;
+  if (Array.isArray(data?.data)) return data.data;
+  return [];
+};
+
 export default function AdminDashboardPage() {
   const { user, isAdmin, loading: authLoading, logout } = useAuth();
   const toast = useToast();
@@ -154,14 +164,14 @@ export default function AdminDashboardPage() {
       ]);
 
       setStats(statsRes.data);
-      setProducts(prodsRes.data || []);
-      setCategories(catsRes.data || []);
-      setInventory(invRes.data || []);
-      setInventoryHistory(invHistRes.data || []);
-      setOrders(ordersRes.data || []);
-      setWorkshops(workshopsRes.data || []);
-      setCustomRequests(custRes.data || []);
-      setCoupons(couponsRes.data || []);
+      setProducts(getArray(prodsRes));
+      setCategories(getArray(catsRes));
+      setInventory(getArray(invRes));
+      setInventoryHistory(getArray(invHistRes));
+      setOrders(getArray(ordersRes));
+      setWorkshops(getArray(workshopsRes));
+      setCustomRequests(getArray(custRes));
+      setCoupons(getArray(couponsRes));
     } catch (err) {
       console.error('Error fetching admin dashboard data:', err);
       toast.error('Failed to load administrator data. Please check connection.');
@@ -264,8 +274,8 @@ export default function AdminDashboardPage() {
         api.get('/admin/inventory/'),
         api.get('/admin/dashboard/'),
       ]);
-      setProducts(prodsRes.data || []);
-      setInventory(invRes.data || []);
+      setProducts(getArray(prodsRes));
+      setInventory(getArray(invRes));
       setStats(statsRes.data);
     } catch (err) {
       toast.error(err.response?.data?.error || 'Failed to save product details.');
@@ -294,8 +304,8 @@ export default function AdminDashboardPage() {
         api.get('/admin/inventory/'),
         api.get('/admin/dashboard/'),
       ]);
-      setProducts(prodsRes.data || []);
-      setInventory(invRes.data || []);
+      setProducts(getArray(prodsRes));
+      setInventory(getArray(invRes));
       setStats(statsRes.data);
     } catch (err) {
       toast.error('Could not delete product.');
@@ -381,10 +391,10 @@ export default function AdminDashboardPage() {
         api.get('/admin/dashboard/'),
         api.get('/admin/products/'),
       ]);
-      setInventory(invRes.data || []);
+      setInventory(getArray(invRes));
       setInventoryHistory(histRes.data || []);
       setStats(statsRes.data);
-      setProducts(prodsRes.data || []);
+      setProducts(getArray(prodsRes));
     } catch (err) {
       toast.error(err.response?.data?.error || 'Failed to adjust inventory.');
     }
@@ -473,7 +483,7 @@ export default function AdminDashboardPage() {
       const res = await api.post(`/customizations/admin/requests/${quotingRequest.id}/quote/`, quoteForm);
       toast.success(res.data.message);
       const custRes = await api.get('/customizations/admin/requests/');
-      setCustomRequests(custRes.data || []);
+      setCustomRequests(getArray(custRes));
       setQuotingRequest(null);
     } catch (err) {
       toast.error('Could not issue quotation.');
@@ -487,7 +497,7 @@ export default function AdminDashboardPage() {
       toast.success(`Coupon ${couponForm.code} created.`);
       setCouponModalOpen(false);
       const couponsRes = await api.get('/admin/coupons/');
-      setCoupons(couponsRes.data || []);
+      setCoupons(getArray(couponsRes));
     } catch (err) {
       toast.error('Failed to create coupon.');
     }
@@ -772,7 +782,7 @@ export default function AdminDashboardPage() {
                     {stats.total_orders}
                   </p>
                   <span className="text-[11px] text-emerald-700 font-medium">
-                    ₹{stats.verified_revenue.toFixed(2)} Paid Revenue
+                    ₹{Number(stats?.verified_revenue ?? 0).toFixed(2)} Paid Revenue
                   </span>
                 </div>
               </div>

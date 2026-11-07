@@ -1,5 +1,6 @@
 import React from 'react';
 import { Shield, Lock, Eye, FileText, CheckCircle2 } from 'lucide-react';
+import { getWhatsAppUrl, WHATSAPP_DISPLAY } from '../config/whatsapp';
 
 export default function PrivacyPolicyPage() {
   return (
@@ -30,7 +31,7 @@ export default function PrivacyPolicyPage() {
             <p><strong>Business Name:</strong> SiHA Craft Studio</p>
             <p><strong>Primary Contact Email:</strong> hello@sihacraftstudio.com</p>
             <p><strong>Operating Atelier:</strong> Bengaluru, Karnataka, India</p>
-            <p><strong>WhatsApp Inquiries:</strong> +91 98765 43210</p>
+            <p><strong>WhatsApp Inquiries:</strong> <a href={getWhatsAppUrl("Hello SiHA Craft Studio! I have a question regarding privacy policies.")} target="_blank" rel="noopener noreferrer" className="text-emerald-700 hover:underline">{WHATSAPP_DISPLAY}</a></p>
           </div>
         </section>
 

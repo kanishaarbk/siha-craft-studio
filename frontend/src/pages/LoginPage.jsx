@@ -49,20 +49,20 @@ export default function LoginPage() {
 
       <div className="card-pastel p-8 bg-white/95 shadow-pastel-lg space-y-6">
         
-        {/* Standard Email Login */}
+        {/* Standard Email/Username Login */}
         <form onSubmit={handleEmailLogin} className="space-y-4">
           <div>
-            <label className="text-xs font-semibold text-brand-chocolate block mb-1">Email Address</label>
+            <label className="text-xs font-semibold text-brand-chocolate block mb-1">Email Address or Username</label>
             <div className="relative">
               <Mail className="w-4 h-4 text-brand-burgundy/60 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
-                type="email"
+                type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@example.com"
+                placeholder="name@example.com or username"
                 className="input-pastel text-xs pl-10"
                 required
-                autoComplete="email"
+                autoComplete="username"
               />
             </div>
           </div>

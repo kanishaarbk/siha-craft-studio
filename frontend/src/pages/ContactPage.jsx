@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Mail, Phone, MapPin, MessageCircle, Instagram, Send, CheckCircle2 } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import api from '../services/api';
+import { getWhatsAppUrl, WHATSAPP_DISPLAY } from '../config/whatsapp';
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
@@ -66,7 +67,9 @@ export default function ContactPage() {
                 <Phone className="w-5 h-5 text-brand-burgundy shrink-0 mt-0.5" />
                 <div>
                   <strong className="block text-brand-burgundy text-sm">Customer Helpline</strong>
-                  <span>+91 98765 43210</span>
+                  <a href={`tel:${WHATSAPP_DISPLAY.replace(/\s+/g, '')}`} className="hover:text-brand-burgundy font-medium">
+                    {WHATSAPP_DISPLAY}
+                  </a>
                 </div>
               </div>
             </div>
@@ -76,13 +79,13 @@ export default function ContactPage() {
               <h4 className="font-heading text-sm font-bold text-brand-burgundy">Direct Channels</h4>
               <div className="flex flex-col gap-2">
                 <a
-                  href="https://wa.me/919876543210?text=Hello%20SiHA%20Craft%20Studio!"
+                  href={getWhatsAppUrl("Hello SiHA Craft Studio! I have an inquiry.")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2.5 p-3 rounded-xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition-colors text-xs font-semibold"
                 >
                   <MessageCircle className="w-4 h-4 fill-current" />
-                  <span>Chat with Artisan on WhatsApp (+91 98765 43210)</span>
+                  <span>Chat with Artisan on WhatsApp ({WHATSAPP_DISPLAY})</span>
                 </a>
 
                 <a

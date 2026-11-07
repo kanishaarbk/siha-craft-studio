@@ -20,7 +20,7 @@ ALLOWED_HOSTS = [
     host.strip()
     for host in os.getenv(
         'DJANGO_ALLOWED_HOSTS',
-        'localhost,127.0.0.1,backend-drab-chi-37.vercel.app,backend-94skjkeid-kanishaa.vercel.app'
+        'localhost,127.0.0.1,backend-drab-chi-37.vercel.app,backend-94skjkeid-kanishaa.vercel.app,sihacraftstudio.in,www.sihacraftstudio.in,*'
     ).split(',')
     if host.strip()
 ]
@@ -147,25 +147,28 @@ REST_FRAMEWORK = {
 }
 
 # CORS Configuration
+default_cors_origins = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:3000',
+    'https://frontend-ivory-nu-e987fhvqfo.vercel.app',
+    'https://sihacraftstudio.in',
+    'https://www.sihacraftstudio.in',
+    'http://sihacraftstudio.in',
+    'http://www.sihacraftstudio.in',
+]
 
-cors_origins = os.getenv(
-    'CORS_ALLOWED_ORIGINS',
-    'http://localhost:5173,http://127.0.0.1:5173,https://frontend-ivory-nu-e987fhvqfo.vercel.app'
-)
-
-CORS_ALLOWED_ORIGINS = [
+env_cors_origins = [
     origin.strip()
-    for origin in cors_origins.split(',')
+    for origin in os.getenv('CORS_ALLOWED_ORIGINS', '').split(',')
     if origin.strip()
 ]
 
+CORS_ALLOWED_ORIGINS = list(dict.fromkeys(default_cors_origins + env_cors_origins))
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = [
-    origin.strip()
-    for origin in cors_origins.split(',')
-    if origin.strip()
-]
+CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(default_cors_origins + env_cors_origins))
 
 # Razorpay Configuration
 RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', 'rzp_test_TdWtI0lP5xMkO4')
@@ -187,7 +190,7 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'SiHA Craft Studio <hello@s
 BUSINESS_NAME = os.getenv('BUSINESS_NAME', 'SiHA Craft Studio')
 BUSINESS_TAGLINE = os.getenv('BUSINESS_TAGLINE', 'Little Stitches, Handmade with Love')
 BUSINESS_EMAIL = os.getenv('BUSINESS_EMAIL', 'hello@sihacraftstudio.com')
-BUSINESS_PHONE = os.getenv('BUSINESS_PHONE', '+919876543210')
-BUSINESS_WHATSAPP_NUMBER = os.getenv('BUSINESS_WHATSAPP_NUMBER', '919876543210')
+BUSINESS_PHONE = os.getenv('BUSINESS_PHONE', '+91 6379 557 761')
+BUSINESS_WHATSAPP_NUMBER = os.getenv('BUSINESS_WHATSAPP_NUMBER', '916379557761')
 BUSINESS_INSTAGRAM_URL = os.getenv('BUSINESS_INSTAGRAM_URL', 'https://instagram.com/sihacraftstudio')
 BUSINESS_ADDRESS = os.getenv('BUSINESS_ADDRESS', 'Bengaluru, Karnataka, India')

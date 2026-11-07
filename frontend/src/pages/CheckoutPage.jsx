@@ -214,7 +214,7 @@ export default function CheckoutPage() {
                 name="phone_number"
                 value={formData.phone_number}
                 onChange={handleInputChange}
-                placeholder="+91 98765 43210"
+                placeholder="+91 6379 557 761"
                 className="input-pastel text-xs"
                 required
               />

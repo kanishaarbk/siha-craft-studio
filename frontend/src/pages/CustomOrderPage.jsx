@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Sparkles, Upload, CheckCircle2, Clock, ShieldCheck, ArrowRight, Heart } from 'lucide-react';
+import { Sparkles, Upload, CheckCircle2, Clock, ShieldCheck, ArrowRight, Heart, MessageCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import api from '../services/api';
+import { getWhatsAppUrl, WHATSAPP_DISPLAY } from '../config/whatsapp';
 
 export default function CustomOrderPage() {
   const { user, isAuthenticated } = useAuth();
@@ -98,10 +99,19 @@ export default function CustomOrderPage() {
           </p>
         </div>
 
-        <div className="pt-2">
+        <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+          <a
+            href={getWhatsAppUrl(`Hello SiHA Craft Studio! I just submitted custom order request #${submittedRequest.request_number} ("${submittedRequest.title}"). Here are more details.`)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary text-xs bg-emerald-700 hover:bg-emerald-800 gap-2 border-none"
+          >
+            <MessageCircle className="w-3.5 h-3.5 fill-white" />
+            <span>Chat on WhatsApp ({WHATSAPP_DISPLAY})</span>
+          </a>
           <button
             onClick={() => setSubmittedRequest(null)}
-            className="btn-secondary text-xs mr-3"
+            className="btn-secondary text-xs"
           >
             Submit Another Request
           </button>
@@ -124,6 +134,19 @@ export default function CustomOrderPage() {
         <p className="text-sm text-brand-chocolate/80 leading-relaxed">
           From custom amigurumi plushies honoring beloved pets, personalized wedding bouquet keepsakes, customized granny square bags, to birthday lettering—share your vision and we will bring it to life stitch by stitch.
         </p>
+
+        {/* WhatsApp Direct Inquiry Banner */}
+        <div className="pt-2">
+          <a
+            href={getWhatsAppUrl("Hello SiHA Craft Studio! I'd like to consult on a custom handmade crochet order.")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-semibold hover:bg-emerald-100 transition-colors shadow-sm"
+          >
+            <MessageCircle className="w-4 h-4 fill-emerald-600" />
+            <span>Prefer fast consultation? Chat directly on WhatsApp ({WHATSAPP_DISPLAY})</span>
+          </a>
+        </div>
       </div>
 
       {/* Form Container */}
@@ -166,7 +189,7 @@ export default function CustomOrderPage() {
                 name="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
-                placeholder="+91 98765 43210"
+                placeholder="+91 6379 557 761"
                 className="input-pastel text-xs"
                 required
               />

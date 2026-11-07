@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ShoppingBag, Heart, Star, ShieldCheck, Truck, RefreshCw, Scissors, Sparkles, Check, ChevronRight } from 'lucide-react';
+import { ShoppingBag, Heart, Star, ShieldCheck, Truck, RefreshCw, Scissors, Sparkles, Check, ChevronRight, MessageCircle } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import api from '../services/api';
+import { getWhatsAppUrl, WHATSAPP_DISPLAY } from '../config/whatsapp';
 
 export default function ProductDetailPage() {
   const { slug } = useParams();
@@ -256,6 +257,18 @@ export default function ProductDetailPage() {
                 <span>{addingToCart ? 'Adding to Basket...' : 'Add to Handmade Basket'}</span>
               </button>
             </div>
+
+            {/* Direct WhatsApp Product Enquiry */}
+            <a
+              href={getWhatsAppUrl(`Hello SiHA Craft Studio! I have an inquiry about "${product.name}" (SKU: ${product.sku || product.id}). Could you help me with customization and availability?`)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-2.5 px-4 rounded-full border border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition-colors flex items-center justify-center gap-2 text-xs font-semibold shadow-sm"
+              aria-label={`Enquire about ${product.name} on WhatsApp`}
+            >
+              <MessageCircle className="w-4 h-4 fill-emerald-600 text-emerald-600" />
+              <span>Enquire About This Piece on WhatsApp</span>
+            </a>
           </div>
 
           {/* Boutique Shipping & Care Highlights */}

@@ -13,6 +13,7 @@ from classes.models import CrochetClass, ClassSession, ClassBooking
 from customizations.models import CustomizationRequest
 from accounts.models import User
 from accounts.permissions import IsStaffOrAdmin
+from accounts.authentication import TokenAuthentication
 
 
 class PublicStoreSettingsView(views.APIView):
@@ -26,7 +27,8 @@ class PublicStoreSettingsView(views.APIView):
             'store_name': 'SiHA Craft Studio',
             'tagline': 'Little Stitches, Handmade with Love',
             'contact_email': 'hello@sihacraftstudio.com',
-            'whatsapp_number': '919876543210',
+            'whatsapp_number': '916379557761',
+            'phone_number': '+91 6379 557 761',
             'instagram_url': 'https://instagram.com/sihacraftstudio',
             'free_shipping_threshold': '999',
             'default_shipping_fee': '79',
@@ -37,6 +39,8 @@ class PublicStoreSettingsView(views.APIView):
         for k, v in defaults.items():
             if k not in data:
                 data[k] = v
+        if data.get('whatsapp_number') in ('919876543210', '+919876543210', '+91 98765 43210'):
+            data['whatsapp_number'] = '916379557761'
         return Response(data)
 
 
@@ -369,6 +373,7 @@ class AdminInventoryHistoryView(views.APIView):
 
 
 class AdminProductManageView(views.APIView):
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsStaffOrAdmin]
 
     def get(self, request, product_id=None):

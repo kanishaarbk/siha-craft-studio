@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ShoppingBag, Heart, Search, Menu, X, User as UserIcon, Shield, Sparkles } from 'lucide-react';
+import { ShoppingBag, Heart, Search, Menu, X, User as UserIcon, Shield, Sparkles, MessageCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { getWhatsAppUrl, WHATSAPP_DISPLAY } from '../config/whatsapp';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -100,6 +101,18 @@ export default function Navbar() {
               >
                 <Heart className="w-5 h-5" />
               </Link>
+
+              {/* WhatsApp Support Button */}
+              <a
+                href={getWhatsAppUrl("Hello SiHA Craft Studio! I have an inquiry about your handmade creations.")}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2.5 rounded-full text-emerald-700 hover:bg-emerald-50 transition-colors relative"
+                aria-label={`Chat on WhatsApp (${WHATSAPP_DISPLAY})`}
+                title={`Chat on WhatsApp (${WHATSAPP_DISPLAY})`}
+              >
+                <MessageCircle className="w-5 h-5 fill-emerald-100" />
+              </a>
 
               {/* Cart Drawer Trigger */}
               <Link
@@ -228,6 +241,16 @@ export default function Navbar() {
                 {link.name}
               </Link>
             ))}
+            <a
+              href={getWhatsAppUrl("Hello SiHA Craft Studio! I have an inquiry about your handmade creations.")}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100"
+            >
+              <MessageCircle className="w-4 h-4 fill-emerald-600" />
+              <span>WhatsApp Support ({WHATSAPP_DISPLAY})</span>
+            </a>
             {!isAuthenticated && (
               <div className="pt-2">
                 <Link

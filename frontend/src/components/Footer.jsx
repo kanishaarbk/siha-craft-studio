@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin, Instagram, Heart, Send } from 'lucide-react';
+import { Mail, Phone, MapPin, Instagram, Heart, Send, MessageCircle } from 'lucide-react';
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
+import { getWhatsAppUrl, WHATSAPP_DISPLAY } from '../config/whatsapp';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
@@ -65,7 +66,18 @@ export default function Footer() {
               </p>
               <p className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-brand-burgundy shrink-0" />
-                <span>+91 98765 43210</span>
+                <a href={`tel:${WHATSAPP_DISPLAY.replace(/\s+/g, '')}`} className="hover:text-brand-burgundy">{WHATSAPP_DISPLAY}</a>
+              </p>
+              <p className="flex items-center gap-2">
+                <MessageCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                <a
+                  href={getWhatsAppUrl("Hello SiHA Craft Studio! I have an inquiry about your creations.")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-emerald-700 font-semibold text-emerald-700"
+                >
+                  WhatsApp: {WHATSAPP_DISPLAY}
+                </a>
               </p>
             </div>
           </div>
@@ -93,6 +105,17 @@ export default function Footer() {
               <li><Link to="/order-tracking" className="hover:text-brand-burgundy transition-colors">Track Your Order</Link></li>
               <li><Link to="/faq" className="hover:text-brand-burgundy transition-colors">Frequently Asked Questions</Link></li>
               <li><Link to="/contact" className="hover:text-brand-burgundy transition-colors">Contact Our Studio</Link></li>
+              <li>
+                <a
+                  href={getWhatsAppUrl("Hello SiHA Craft Studio! I need assistance with my order.")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-emerald-700 hover:text-emerald-800 transition-colors font-semibold flex items-center gap-1.5"
+                >
+                  <MessageCircle className="w-3.5 h-3.5 fill-emerald-600" />
+                  <span>WhatsApp Concierge</span>
+                </a>
+              </li>
               <li><Link to="/shipping-policy" className="hover:text-brand-burgundy transition-colors">Shipping Policy</Link></li>
               <li><Link to="/refund-policy" className="hover:text-brand-burgundy transition-colors">Returns & Refunds</Link></li>
             </ul>
