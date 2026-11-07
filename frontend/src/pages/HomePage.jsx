@@ -273,7 +273,7 @@ export default function HomePage() {
           <span className="text-xs font-semibold uppercase tracking-wider text-brand-burgundy">Follow Along</span>
           <h2 className="font-heading text-3xl font-bold text-brand-burgundy">@sihacraftstudio on Instagram</h2>
           <p className="text-sm text-brand-chocolate/75 max-w-md mx-auto">
-            Behind the scenes in our Bengaluru atelier, work-in-progress amigurumi stitches, and artisan showcases.
+            Behind the scenes in our Namakkal atelier, work-in-progress amigurumi stitches, and artisan showcases.
           </p>
           <div className="pt-2">
             <a

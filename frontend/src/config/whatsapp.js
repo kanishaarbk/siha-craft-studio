@@ -25,3 +25,4 @@ export default {
   baseUrl: WHATSAPP_BASE_URL,
   getUrl: getWhatsAppUrl,
 };
+

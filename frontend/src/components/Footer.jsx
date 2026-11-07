@@ -58,7 +58,7 @@ export default function Footer() {
             <div className="space-y-1.5 text-xs text-brand-chocolate/80 pt-1">
               <p className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-brand-burgundy shrink-0" />
-                <span>Bengaluru, Karnataka, India</span>
+                <span>Namakkal, Tamil Nadu, India</span>
               </p>
               <p className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-brand-burgundy shrink-0" />

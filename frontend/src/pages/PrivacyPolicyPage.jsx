@@ -30,7 +30,7 @@ export default function PrivacyPolicyPage() {
           <div className="p-4 rounded-xl bg-pastel-cream border border-pastel-pink text-xs space-y-1">
             <p><strong>Business Name:</strong> SiHA Craft Studio</p>
             <p><strong>Primary Contact Email:</strong> hello@sihacraftstudio.com</p>
-            <p><strong>Operating Atelier:</strong> Bengaluru, Karnataka, India</p>
+            <p><strong>Operating Atelier:</strong> Namakkal, Tamil Nadu, India</p>
             <p><strong>WhatsApp Inquiries:</strong> <a href={getWhatsAppUrl("Hello SiHA Craft Studio! I have a question regarding privacy policies.")} target="_blank" rel="noopener noreferrer" className="text-emerald-700 hover:underline">{WHATSAPP_DISPLAY}</a></p>
           </div>
         </section>

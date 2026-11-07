@@ -51,7 +51,7 @@ export default function ContactPage() {
                 <MapPin className="w-5 h-5 text-brand-burgundy shrink-0 mt-0.5" />
                 <div>
                   <strong className="block text-brand-burgundy text-sm">Operating Atelier</strong>
-                  <span>SiHA Craft Studio, Handcrafted Boutique, Bengaluru, Karnataka, India</span>
+                  <span>SiHA Craft Studio, Handcrafted Boutique, Namakkal, Tamil Nadu, India</span>
                 </div>
               </div>
 

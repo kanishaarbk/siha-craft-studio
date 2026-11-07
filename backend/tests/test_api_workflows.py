@@ -128,11 +128,11 @@ class SiHACraftStudioBackendTests(TestCase):
         checkout_res = self.client.post('/api/orders/checkout/', {
             'full_name': 'Aarav Patel',
             'email': 'aarav@test.com',
-            'phone_number': '9876543210',
+            'phone_number': '6379557761',
             'address_line1': '101 Lotus St',
-            'city': 'Bengaluru',
-            'state': 'Karnataka',
-            'postal_code': '560001',
+            'city': 'Namakkal',
+            'state': 'Tamil Nadu',
+            'postal_code': '637001',
             'coupon_code': 'WELCOME10',
             'session_key': session_key
         })

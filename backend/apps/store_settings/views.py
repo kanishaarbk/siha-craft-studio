@@ -32,7 +32,7 @@ class PublicStoreSettingsView(views.APIView):
             'instagram_url': 'https://instagram.com/sihacraftstudio',
             'free_shipping_threshold': '999',
             'default_shipping_fee': '79',
-            'business_address': 'Bengaluru, Karnataka, India',
+            'business_address': 'Namakkal, Tamil Nadu, India',
             'currency': 'INR',
             'currency_symbol': '₹'
         }
@@ -41,6 +41,8 @@ class PublicStoreSettingsView(views.APIView):
                 data[k] = v
         if data.get('whatsapp_number') in ('919876543210', '+919876543210', '+91 98765 43210'):
             data['whatsapp_number'] = '916379557761'
+        if not data.get('business_address') or 'bengaluru' in data.get('business_address', '').lower():
+            data['business_address'] = 'Namakkal, Tamil Nadu, India'
         return Response(data)
 
 
@@ -983,13 +985,13 @@ class AdminRunMigrationsView(views.APIView):
                         customer=customer_user,
                         guest_email="customer@sihacraftstudio.com",
                         guest_name="Aaradhya Sharma",
-                        guest_phone="+919876543210",
+                        guest_phone="+91 6379 557 761",
                         shipping_name="Aaradhya Sharma",
-                        shipping_phone="+919876543210",
-                        shipping_address_line1="42, Lavender Lane, Koramangala",
-                        shipping_city="Bengaluru",
-                        shipping_state="Karnataka",
-                        shipping_postal_code="560034",
+                        shipping_phone="+91 6379 557 761",
+                        shipping_address_line1="12, Artisan Street, Mohanur Road",
+                        shipping_city="Namakkal",
+                        shipping_state="Tamil Nadu",
+                        shipping_postal_code="637001",
                         shipping_country="India",
                         subtotal=Decimal("1299.00"),
                         shipping_fee=Decimal("0.00"),

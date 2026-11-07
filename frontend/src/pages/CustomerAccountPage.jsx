@@ -32,8 +32,8 @@ export default function CustomerAccountPage() {
     phone_number: '',
     address_line1: '',
     address_line2: '',
-    city: 'Bengaluru',
-    state: 'Karnataka',
+    city: 'Namakkal',
+    state: 'Tamil Nadu',
     postal_code: '',
   });
   const [showAddressForm, setShowAddressForm] = useState(false);
@@ -81,7 +81,7 @@ export default function CustomerAccountPage() {
       const res = await api.post('/auth/addresses/', newAddress);
       setAddresses([...addresses, res.data]);
       setShowAddressForm(false);
-      setNewAddress({ full_name: '', phone_number: '', address_line1: '', address_line2: '', city: 'Bengaluru', state: 'Karnataka', postal_code: '' });
+      setNewAddress({ full_name: '', phone_number: '', address_line1: '', address_line2: '', city: 'Namakkal', state: 'Tamil Nadu', postal_code: '' });
       toast.success('Address saved.');
     } catch (err) {
       toast.error('Could not save address.');

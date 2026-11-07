@@ -89,7 +89,7 @@ export default function TermsConditionsPage() {
             6. Governing Law & Dispute Resolution
           </h2>
           <p>
-            These terms are governed by the laws of India. Any disputes arising in connection with orders or workshop enrollments shall be subject to the exclusive jurisdiction of the competent courts in Bengaluru, Karnataka, India.
+            These terms are governed by the laws of India. Any disputes arising in connection with orders or workshop enrollments shall be subject to the exclusive jurisdiction of the competent courts in Namakkal, Tamil Nadu, India.
           </p>
         </section>
 
