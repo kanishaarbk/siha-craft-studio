@@ -167,7 +167,12 @@ env_cors_origins = [
 ]
 
 CORS_ALLOWED_ORIGINS = list(dict.fromkeys(default_cors_origins + env_cors_origins))
-CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://frontend(?:-[a-z0-9-]+)?-kanishaa\.vercel\.app$",
+]
+
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(default_cors_origins + env_cors_origins))
