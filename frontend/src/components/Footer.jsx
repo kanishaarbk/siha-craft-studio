@@ -4,6 +4,7 @@ import { Mail, Phone, MapPin, Instagram, Heart, Send, MessageCircle } from 'luci
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
 import { getWhatsAppUrl, WHATSAPP_DISPLAY } from '../config/whatsapp';
+import { CATEGORIES, getCategoryUrl } from '../config/categories';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
@@ -27,54 +28,56 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-pastel-sand border-t border-pastel-pink/70 pt-16 pb-10 text-brand-chocolate">
+    <footer className="bg-[#FFFDF7] border-t border-[#84977B]/20 pt-16 pb-10 text-[#45483F]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Top 4-Column Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-pastel-pink/60">
-          
+        {/* Top Multi-Column Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-[#84977B]/15">
           {/* Brand Info (2 cols on lg) */}
           <div className="lg:col-span-2 space-y-4">
             <Link to="/" className="flex items-center gap-3">
               <img
                 src="/images/siha-logo.png"
-                alt="SiHA Craft Studio"
-                className="w-12 h-12 rounded-full border border-pastel-pink object-cover"
+                alt="Siha Craft Studio"
+                className="w-12 h-12 rounded-full border border-[#84977B]/30 object-cover"
               />
               <div>
-                <span className="font-heading text-xl font-bold text-brand-burgundy block">
-                  SiHA Craft Studio
+                <span className="font-heading text-xl font-bold text-[#566B50] block">
+                  Siha Craft Studio
                 </span>
-                <span className="text-xs font-script italic text-brand-chocolate/80">
+                <span className="text-xs font-script italic text-[#45483F]">
                   Little Stitches, Handmade with Love
                 </span>
               </div>
             </Link>
 
-            <p className="text-sm text-brand-chocolate/80 leading-relaxed max-w-sm">
-              A boutique crochet atelier dedicated to slow fashion, mindful handcrafted treasures, and timeless stitches. From cuddly amigurumi to everlasting bouquets, every piece is made with heirloom love.
+            <p className="text-xs sm:text-sm text-[#45483F]/85 leading-relaxed max-w-sm">
+              An artisan crochet studio dedicated to mindful handmade slow fashion, heirloom amigurumi toys, and everlasting floral blooms. Each piece is lovingly hand-crocheted stitch by stitch.
             </p>
 
-            <div className="space-y-1.5 text-xs text-brand-chocolate/80 pt-1">
+            <div className="space-y-2 text-xs text-[#45483F]/85 pt-1">
               <p className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-brand-burgundy shrink-0" />
+                <MapPin className="w-4 h-4 text-[#566B50] shrink-0" />
                 <span>Namakkal, Tamil Nadu, India</span>
               </p>
               <p className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-brand-burgundy shrink-0" />
-                <a href="mailto:hello@sihacraftstudio.com" className="hover:text-brand-burgundy">hello@sihacraftstudio.com</a>
+                <Mail className="w-4 h-4 text-[#566B50] shrink-0" />
+                <a href="mailto:hello@sihacraftstudio.com" className="hover:text-[#566B50]">
+                  hello@sihacraftstudio.com
+                </a>
               </p>
               <p className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-brand-burgundy shrink-0" />
-                <a href={`tel:${WHATSAPP_DISPLAY.replace(/\s+/g, '')}`} className="hover:text-brand-burgundy">{WHATSAPP_DISPLAY}</a>
+                <Phone className="w-4 h-4 text-[#566B50] shrink-0" />
+                <a href={`tel:${WHATSAPP_DISPLAY.replace(/\s+/g, '')}`} className="hover:text-[#566B50]">
+                  {WHATSAPP_DISPLAY}
+                </a>
               </p>
               <p className="flex items-center gap-2">
-                <MessageCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                <MessageCircle className="w-4 h-4 text-[#566B50] shrink-0" />
                 <a
-                  href={getWhatsAppUrl("Hello SiHA Craft Studio! I have an inquiry about your creations.")}
+                  href={getWhatsAppUrl('Hello Siha Craft Studio! I have an inquiry about your creations.')}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-emerald-700 font-semibold text-emerald-700"
+                  className="hover:text-[#566B50] font-semibold text-[#566B50]"
                 >
                   WhatsApp: {WHATSAPP_DISPLAY}
                 </a>
@@ -82,52 +85,76 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Shop Product Categories */}
           <div className="space-y-3">
-            <h4 className="font-heading text-sm font-bold text-brand-burgundy uppercase tracking-wider">
-              Boutique
+            <h4 className="font-heading text-xs font-bold text-[#566B50] uppercase tracking-wider">
+              Product Categories
             </h4>
-            <ul className="space-y-2 text-sm text-brand-chocolate/80">
-              <li><Link to="/shop" className="hover:text-brand-burgundy transition-colors">Shop All Handmade</Link></li>
-              <li><Link to="/custom-orders" className="hover:text-brand-burgundy transition-colors">Custom Orders</Link></li>
-              <li><Link to="/classes" className="hover:text-brand-burgundy transition-colors">Workshops & Classes</Link></li>
-              <li><Link to="/order-tracking" className="hover:text-brand-burgundy transition-colors">Track Order</Link></li>
-              <li><Link to="/about" className="hover:text-brand-burgundy transition-colors">Our Artisan Story</Link></li>
-            </ul>
-          </div>
-
-          {/* Customer Care */}
-          <div className="space-y-3">
-            <h4 className="font-heading text-sm font-bold text-brand-burgundy uppercase tracking-wider">
-              Customer Care
-            </h4>
-            <ul className="space-y-2 text-sm text-brand-chocolate/80">
-              <li><Link to="/order-tracking" className="hover:text-brand-burgundy transition-colors">Track Your Order</Link></li>
-              <li><Link to="/faq" className="hover:text-brand-burgundy transition-colors">Frequently Asked Questions</Link></li>
-              <li><Link to="/contact" className="hover:text-brand-burgundy transition-colors">Contact Our Studio</Link></li>
+            <ul className="space-y-1.5 text-xs text-[#45483F]/80">
+              {CATEGORIES.slice(0, 7).map((cat) => (
+                <li key={cat.id}>
+                  <Link
+                    to={getCategoryUrl(cat)}
+                    className="hover:text-[#566B50] transition-colors"
+                  >
+                    {cat.name}
+                  </Link>
+                </li>
+              ))}
               <li>
-                <a
-                  href={getWhatsAppUrl("Hello SiHA Craft Studio! I need assistance with my order.")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-emerald-700 hover:text-emerald-800 transition-colors font-semibold flex items-center gap-1.5"
-                >
-                  <MessageCircle className="w-3.5 h-3.5 fill-emerald-600" />
-                  <span>WhatsApp Concierge</span>
-                </a>
+                <Link to="/shop?sort=newest" className="hover:text-[#566B50] font-medium text-[#566B50]">
+                  New Arrivals →
+                </Link>
               </li>
-              <li><Link to="/shipping-policy" className="hover:text-brand-burgundy transition-colors">Shipping Policy</Link></li>
-              <li><Link to="/refund-policy" className="hover:text-brand-burgundy transition-colors">Returns & Refunds</Link></li>
             </ul>
           </div>
 
-          {/* Newsletter Subscription */}
+          {/* Quick & Studio Links */}
           <div className="space-y-3">
-            <h4 className="font-heading text-sm font-bold text-brand-burgundy uppercase tracking-wider">
-              Studio Letters
+            <h4 className="font-heading text-xs font-bold text-[#566B50] uppercase tracking-wider">
+              Studio & Orders
             </h4>
-            <p className="text-xs text-brand-chocolate/80 leading-relaxed">
-              Receive crochet pattern releases, seasonal pastel collections, and exclusive class announcements.
+            <ul className="space-y-1.5 text-xs text-[#45483F]/80">
+              <li>
+                <Link to="/custom-orders" className="hover:text-[#566B50] transition-colors">
+                  Custom Orders & Quotes
+                </Link>
+              </li>
+              <li>
+                <Link to="/classes" className="hover:text-[#566B50] transition-colors">
+                  Workshops & Classes
+                </Link>
+              </li>
+              <li>
+                <Link to="/order-tracking" className="hover:text-[#566B50] transition-colors">
+                  Track Your Order
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="hover:text-[#566B50] transition-colors">
+                  Our Artisan Story
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="hover:text-[#566B50] transition-colors">
+                  Contact Our Studio
+                </Link>
+              </li>
+              <li>
+                <Link to="/faq" className="hover:text-[#566B50] transition-colors">
+                  Frequently Asked Questions
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Newsletter Subscription & Socials */}
+          <div className="space-y-3">
+            <h4 className="font-heading text-xs font-bold text-[#566B50] uppercase tracking-wider">
+              Artisan Newsletter
+            </h4>
+            <p className="text-xs text-[#45483F]/80 leading-relaxed">
+              Receive new pattern previews, seasonal collection drops, and workshop announcements.
             </p>
             <form onSubmit={handleSubscribe} className="space-y-2">
               <div className="relative">
@@ -141,38 +168,64 @@ export default function Footer() {
                 />
                 <button
                   type="submit"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg bg-brand-burgundy text-white hover:bg-brand-burgundy-dark transition-colors"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg bg-[#566B50] text-white hover:bg-[#43543e] transition-colors"
                   aria-label="Subscribe to newsletter"
                 >
                   <Send className="w-3.5 h-3.5" />
                 </button>
               </div>
               {subscribed && (
-                <p className="text-[11px] text-emerald-700 font-medium">
+                <p className="text-[11px] text-[#566B50] font-medium">
                   Welcome to our stitch circle!
                 </p>
               )}
             </form>
+
+            <div className="pt-2">
+              <span className="text-[11px] font-semibold text-[#84977B] block mb-1.5 uppercase tracking-wider">
+                Follow Our Studio
+              </span>
+              <div className="flex items-center gap-2">
+                <a
+                  href="https://instagram.com/sihacraftstudio"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-xl bg-white border border-[#84977B]/20 text-[#566B50] hover:bg-[#84977B]/10 transition-colors"
+                  aria-label="Follow on Instagram"
+                >
+                  <Instagram className="w-4 h-4" />
+                </a>
+                <a
+                  href={getWhatsAppUrl('Hello Siha Craft Studio!')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-xl bg-white border border-[#84977B]/20 text-[#566B50] hover:bg-[#84977B]/10 transition-colors"
+                  aria-label="Chat on WhatsApp"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Bottom Bar: Copyright & Legal Policies */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-brand-chocolate/70">
-          <p>© {new Date().getFullYear()} SiHA Craft Studio. All rights reserved. Stitched with love in India.</p>
-          <div className="flex flex-wrap items-center gap-4">
-            <Link to="/privacy-policy" className="hover:text-brand-burgundy underline decoration-dotted">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#45483F]/70">
+          <p>© {new Date().getFullYear()} Siha Craft Studio. All rights reserved. Handcrafted in Namakkal, Tamil Nadu, India.</p>
+          <div className="flex flex-wrap items-center gap-4 text-[11px]">
+            <Link to="/privacy-policy" className="hover:text-[#566B50] underline decoration-dotted">
               Privacy Policy
             </Link>
-            <Link to="/terms-and-conditions" className="hover:text-brand-burgundy underline decoration-dotted">
+            <Link to="/terms-and-conditions" className="hover:text-[#566B50] underline decoration-dotted">
               Terms & Conditions
             </Link>
-            <Link to="/shipping-policy" className="hover:text-brand-burgundy underline decoration-dotted">
+            <Link to="/shipping-policy" className="hover:text-[#566B50] underline decoration-dotted">
               Shipping Info
             </Link>
-            <Link to="/refund-policy" className="hover:text-brand-burgundy underline decoration-dotted">
+            <Link to="/refund-policy" className="hover:text-[#566B50] underline decoration-dotted">
               Cancellation & Refunds
             </Link>
-            <Link to="/cookie-preferences" className="hover:text-brand-burgundy underline decoration-dotted">
+            <Link to="/cookie-preferences" className="hover:text-[#566B50] underline decoration-dotted">
               Cookie Preferences
             </Link>
           </div>

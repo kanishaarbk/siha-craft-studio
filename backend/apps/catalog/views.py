@@ -26,10 +26,42 @@ class ProductListView(views.APIView):
     def get(self, request):
         queryset = Product.objects.filter(is_active=True).select_related('category').prefetch_related('variants', 'images')
 
-        # Category filter (by slug or id)
+        # Category filter (by slug, id, or canonical category group)
         cat_param = request.query_params.get('category')
         if cat_param:
-            queryset = queryset.filter(Q(category__slug=cat_param) | Q(category__id__iexact=cat_param))
+            cat_lower = cat_param.strip().lower()
+            category_slug_map = {
+                'crochet-bags': ['crochet-bags', 'crochet-bags-purses', 'bags'],
+                'all-crochet-bags': ['crochet-bags', 'crochet-bags-purses', 'bags'],
+                'crochet-accessories': ['crochet-accessories', 'keychains-small-gifts', 'accessories'],
+                'keychains': ['keychains-small-gifts', 'keychains', 'crochet-accessories'],
+                'crochet-flowers': ['crochet-flowers', 'crochet-flowers-bouquets', 'flowers'],
+                'amigurumi-toys': ['amigurumi-toys', 'crochet-toys-plushies', 'toys', 'plushies'],
+                'home-decor': ['home-decor', 'home-decor-coasters', 'decor'],
+                'baby-collection': ['baby-collection', 'crochet-toys-plushies', 'baby'],
+                'new-arrivals': [],
+            }
+            if cat_lower == 'new-arrivals':
+                queryset = queryset.order_by('-created_at')
+            else:
+                mapped_slugs = category_slug_map.get(cat_lower, [cat_param])
+                name_keyword = cat_param.replace('-', ' ').strip()
+                queryset = queryset.filter(
+                    Q(category__slug__in=mapped_slugs) |
+                    Q(category__slug__icontains=cat_param) |
+                    Q(category__name__icontains=name_keyword) |
+                    Q(category__id__iexact=cat_param)
+                )
+
+        # Subcategory filter
+        sub_param = request.query_params.get('subcategory')
+        if sub_param:
+            sk = sub_param.replace('-', ' ').strip()
+            queryset = queryset.filter(
+                Q(name__icontains=sk) |
+                Q(short_description__icontains=sk) |
+                Q(description__icontains=sk)
+            )
 
         # Search query
         search_query = request.query_params.get('search')

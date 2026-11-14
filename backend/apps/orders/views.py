@@ -205,19 +205,49 @@ class OrderDetailView(views.APIView):
 class OrderTrackingView(views.APIView):
     """
     Securely track order shipping status and courier details.
-    Requires Order ID and registered email verification or authorized customer/admin authentication.
+    Allows tracking by Order Number (e.g. SIHA-...), Courier Tracking/AWB Number, or numeric Order ID.
+    Requires registered email/phone verification, or authorized customer/staff session.
     """
     permission_classes = [permissions.AllowAny]
 
-    def _verify_and_respond(self, request, order_number, email=None):
-        order_number = (order_number or '').strip()
-        if not order_number:
-            return Response({'error': 'Order ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
+    STATUS_LABEL_MAP = {
+        'PENDING_PAYMENT': 'Order Placed',
+        'CONFIRMED': 'Payment Confirmed',
+        'PROCESSING': 'Processing',
+        'READY_TO_SHIP': 'Processing',
+        'SHIPPED': 'Shipped',
+        'OUT_FOR_DELIVERY': 'Out for Delivery',
+        'DELIVERED': 'Delivered',
+        'CANCELLED': 'Cancelled',
+        'REFUND_PENDING': 'Processing',
+        'REFUNDED': 'Cancelled',
+    }
 
-        try:
-            order = Order.objects.prefetch_related('items', 'status_history').get(order_number__iexact=order_number)
-        except Order.DoesNotExist:
-            return Response({'error': 'Order not found with provided tracking reference. Please double check the ID.'}, status=status.HTTP_404_NOT_FOUND)
+    def _verify_and_respond(self, request, order_identifier=None, verification_input=None):
+        lookup = (
+            order_identifier or 
+            request.query_params.get('order') or 
+            request.query_params.get('order_number') or 
+            request.query_params.get('order_id') or 
+            request.data.get('order') or 
+            request.data.get('order_number') or 
+            request.data.get('order_id') or 
+            ''
+        ).strip()
+
+        if lookup.startswith('#'):
+            lookup = lookup.lstrip('#').strip()
+
+        if not lookup:
+            return Response({'error': 'Order ID or tracking reference is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        order_q = Q(order_number__iexact=lookup) | Q(tracking_number__iexact=lookup)
+        if lookup.isdigit():
+            order_q |= Q(id=int(lookup))
+
+        order = Order.objects.prefetch_related('items', 'status_history', 'customer').filter(order_q).first()
+        if not order:
+            return Response({'error': 'Order not found with provided tracking reference. Please double-check your Order ID or Tracking Number.'}, status=status.HTTP_404_NOT_FOUND)
 
         # Verification check
         is_authorized = False
@@ -227,26 +257,52 @@ class OrderTrackingView(views.APIView):
             is_authorized = True
         elif user and order.customer_id and order.customer_id == user.id:
             is_authorized = True
+        elif user and user.email and (
+            (order.customer and order.customer.email.lower() == user.email.lower()) or
+            (order.guest_email and order.guest_email.lower() == user.email.lower())
+        ):
+            is_authorized = True
         else:
-            provided_email = (email or request.query_params.get('email') or request.data.get('email', '')).strip().lower()
-            if not provided_email:
+            v_input = (
+                verification_input or
+                request.query_params.get('email') or
+                request.query_params.get('verification') or
+                request.query_params.get('phone') or
+                request.data.get('email') or
+                request.data.get('verification') or
+                request.data.get('phone') or
+                ''
+            ).strip().lower()
+
+            if not v_input:
                 return Response({
-                    'error': 'Please provide the registered email address associated with this order to securely verify your identity.'
+                    'error': 'Please provide the registered email address or phone number associated with this order to securely verify your identity.'
                 }, status=status.HTTP_400_BAD_REQUEST)
 
             customer_email = (order.customer.email.lower() if order.customer else '')
             guest_email = (order.guest_email.lower() if order.guest_email else '')
-            if provided_email in (customer_email, guest_email):
+            shipping_phone = (order.shipping_phone or '').strip().replace(' ', '').replace('-', '')
+            guest_phone = (order.guest_phone or '').strip().replace(' ', '').replace('-', '')
+            clean_v_input = v_input.replace(' ', '').replace('-', '')
+
+            if v_input in (customer_email, guest_email):
+                is_authorized = True
+            elif clean_v_input and (
+                clean_v_input in shipping_phone or 
+                clean_v_input in guest_phone or 
+                (len(clean_v_input) >= 4 and (shipping_phone.endswith(clean_v_input) or guest_phone.endswith(clean_v_input)))
+            ):
                 is_authorized = True
 
         if not is_authorized:
             return Response({
-                'error': 'Security verification failed: The email address provided does not match the order records.'
+                'error': 'Security verification failed: The email address or phone number provided does not match the order records.'
             }, status=status.HTTP_403_FORBIDDEN)
 
         history = [
             {
-                'status': h.status,
+                'status': self.STATUS_LABEL_MAP.get(h.status, h.status.replace('_', ' ').title()),
+                'raw_status': h.status,
                 'notes': h.notes,
                 'timestamp': h.created_at
             }
@@ -264,11 +320,27 @@ class OrderTrackingView(views.APIView):
             for it in order.items.all()
         ]
 
+        order_status_label = self.STATUS_LABEL_MAP.get(order.fulfillment_status, 'Order Placed')
+        
+        # Shipping status label
+        if order.fulfillment_status in ('SHIPPED', 'OUT_FOR_DELIVERY', 'DELIVERED'):
+            shipping_status_label = order_status_label
+        elif order.fulfillment_status == 'CANCELLED':
+            shipping_status_label = 'Cancelled'
+        elif order.fulfillment_status in ('CONFIRMED', 'PROCESSING', 'READY_TO_SHIP'):
+            shipping_status_label = 'Processing & Handcrafting'
+        else:
+            shipping_status_label = 'Pending Payment'
+
         return Response({
+            'order_id': order.id,
             'order_number': order.order_number,
+            'order_date': order.created_at,
+            'order_status': order_status_label,
+            'shipping_status': shipping_status_label,
+            'payment_status': order.payment_status.replace('_', ' ').title(),
             'fulfillment_status': order.fulfillment_status,
-            'payment_status': order.payment_status,
-            'courier_name': order.courier_name or 'Pending Courier Assignment',
+            'courier_name': order.courier_name or 'Pending Assignment',
             'tracking_number': order.tracking_number,
             'tracking_url': order.tracking_url,
             'estimated_delivery_date': order.estimated_delivery_date,
@@ -277,18 +349,17 @@ class OrderTrackingView(views.APIView):
             'destination_state': order.shipping_state,
             'shipping_name': order.shipping_name,
             'total_amount': float(order.total_amount),
-            'order_date': order.created_at,
             'items': items,
             'status_history': history,
         })
 
-    def get(self, request, order_number):
+    def get(self, request, order_number=None):
         return self._verify_and_respond(request, order_number)
 
     def post(self, request, order_number=None):
-        ord_num = order_number or request.data.get('order_number') or request.data.get('order_id')
-        email = request.data.get('email')
-        return self._verify_and_respond(request, ord_num, email=email)
+        ord_num = order_number or request.data.get('order_number') or request.data.get('order_id') or request.data.get('order')
+        email = request.data.get('email') or request.data.get('verification') or request.data.get('phone')
+        return self._verify_and_respond(request, ord_num, verification_input=email)
 
 
 
@@ -331,7 +402,11 @@ class AdminOrderFulfillmentView(views.APIView):
         except Order.DoesNotExist:
             return Response({'error': 'Order not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = AdminOrderFulfillmentSerializer(order, data=request.data, partial=True)
+        data = request.data.copy() if hasattr(request.data, 'copy') else dict(request.data)
+        if data.get('estimated_delivery_date') == '':
+            data['estimated_delivery_date'] = None
+
+        serializer = AdminOrderFulfillmentSerializer(order, data=data, partial=True)
         if serializer.is_valid():
             status_notes = request.data.get('status_notes', '')
             new_status = request.data.get('fulfillment_status', order.fulfillment_status)

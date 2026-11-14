@@ -24,8 +24,11 @@ class PublicStoreSettingsView(views.APIView):
         data = {s.key: s.value for s in settings_qs}
         # Defaults if not configured
         defaults = {
-            'store_name': 'SiHA Craft Studio',
-            'tagline': 'Little Stitches, Handmade with Love',
+            'store_name': 'SIHA CRAFT STUDIO',
+            'tagline': 'Where Every Stitch Tells a Story.',
+            'hero_heading': 'Where Every Stitch Tells a Story.',
+            'hero_description': "Fall in love with our handmade crochet creations, or discover the joy of making your own in our creative workshops. Whether you buy one or craft one yourself, there's a little love in every stitch.",
+            'hero_image_url': '/images/teddy-bear-bouquet.png',
             'contact_email': 'hello@sihacraftstudio.com',
             'whatsapp_number': '916379557761',
             'phone_number': '+91 6379 557 761',
@@ -44,6 +47,19 @@ class PublicStoreSettingsView(views.APIView):
         if not data.get('business_address') or 'bengaluru' in data.get('business_address', '').lower():
             data['business_address'] = 'Namakkal, Tamil Nadu, India'
         return Response(data)
+
+    def put(self, request):
+        user = request.user if request.user and request.user.is_authenticated else None
+        if not user or not (user.is_staff or getattr(user, 'role', '') in ('ADMIN', 'STAFF')):
+            return Response({'error': 'Staff credentials required to update store settings.'}, status=status.HTTP_403_FORBIDDEN)
+        
+        for k, v in request.data.items():
+            if k and v is not None:
+                StoreSetting.objects.update_or_create(key=k, defaults={'value': str(v).strip()})
+        
+        settings_qs = StoreSetting.objects.all()
+        data = {s.key: s.value for s in settings_qs}
+        return Response({'message': 'Store settings and banner configuration saved successfully.', 'settings': data})
 
 
 class NewsletterSubscribeView(views.APIView):
