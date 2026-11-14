@@ -152,6 +152,8 @@ default_cors_origins = [
     'http://127.0.0.1:5173',
     'http://localhost:3000',
     'https://frontend-ivory-nu-e987fhvqfo.vercel.app',
+    'https://frontend-kanishaa.vercel.app',
+    'https://frontend-o611sxyv4-kanishaa.vercel.app',
     'https://sihacraftstudio.in',
     'https://www.sihacraftstudio.in',
     'http://sihacraftstudio.in',

@@ -3,7 +3,7 @@ import axios from 'axios';
 const API_BASE_URL =
   import.meta.env.VITE_API_URL ||
   (import.meta.env.PROD
-    ? 'https://sihacraftstudio.in/api'
+    ? 'https://backend-m56rgqwz4-kanishaa.vercel.app/api'
     : 'http://127.0.0.1:8001/api');
 
 const api = axios.create({
